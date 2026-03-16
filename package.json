@@ -30,6 +30,9 @@
     "publint": "publint --strict",
     "attw": "attw --pack . --ignore-rules cjs-resolves-to-esm",
     "validate": "pnpm publint && pnpm attw",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "pnpm build && pnpm validate && changeset publish",
     "prepare": "simple-git-hooks"
   },
   "simple-git-hooks": {
@@ -66,6 +69,7 @@
     "@arethetypeswrong/cli": "^0.18.2",
     "@biomejs/biome": "^2.4.7",
     "@bufbuild/protobuf": "^2.11.0",
+    "@changesets/cli": "^2.30.0",
     "@connectrpc/connect": "^2.1.1",
     "@connectrpc/connect-web": "^2.1.1",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
