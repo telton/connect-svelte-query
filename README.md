@@ -68,21 +68,9 @@ This project uses modern 2026 tooling:
 
 ## Release Process
 
-### First-Time Setup
+This project uses **manual publishing** with [Changesets](https://github.com/changesets/changesets) for versioning and changelog generation.
 
-To enable automated releases, configure the following in your GitHub repository:
-
-1. **Enable GitHub Actions PR creation:**
-   - Go to Settings → Actions → General
-   - Under "Workflow permissions", enable "Allow GitHub Actions to create and approve pull requests"
-
-2. **Add npm token:**
-   - Create an npm access token with publish permissions
-   - Add it as `NPM_TOKEN` in Settings → Secrets and variables → Actions
-
-### Publishing Workflow
-
-This project uses [Changesets](https://github.com/changesets/changesets) for automated versioning and publishing:
+### Publishing a Release
 
 1. **Create a changeset** when making changes:
    ```bash
@@ -92,21 +80,31 @@ This project uses [Changesets](https://github.com/changesets/changesets) for aut
 
 2. **Commit the changeset** along with your code changes.
 
-3. **Open a PR** - CI will validate all checks including changeset status.
+3. **When ready to release:**
+   ```bash
+   # Update version and changelog
+   pnpm changeset version
+   
+   # Review the changes to package.json and CHANGELOG.md
+   git add .
+   git commit -m "chore: release vX.Y.Z"
+   git push
+   
+   # Build and publish
+   pnpm build
+   npm login  # if not already logged in
+   npm publish --access public --provenance
+   ```
 
-4. **Merge to main** - CI automatically creates a "Version Packages" PR.
+### Automated Publishing (Optional)
 
-5. **Merge Version PR** - CI automatically publishes to npm with provenance.
+The release workflow is available but currently disabled. To enable automated releases:
 
-### Pre-releases
+1. Uncomment the trigger in `.github/workflows/release.yml`
+2. Enable GitHub Actions PR creation (Settings → Actions → General)
+3. Add `NPM_TOKEN` secret (Settings → Secrets and variables → Actions)
 
-For alpha/beta releases, use changeset prerelease mode:
-```bash
-pnpm changeset pre enter alpha
-pnpm changeset
-# ... make your changes ...
-pnpm changeset pre exit
-```
+Then merging to main will automatically create "Version Packages" PRs that publish when merged.
 
 ## License
 
