@@ -1,5 +1,5 @@
 {
-  "name": "connect-svelte-query",
+  "name": "@telton/connect-svelte-query",
   "version": "1.0.0",
   "description": "",
   "type": "module",
