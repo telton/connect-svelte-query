@@ -32,8 +32,8 @@
         ];
 
         shellHook = ''
-          echo "Using Node $(node --version)"
-          echo "Using pnpm $(pnpm version)"
+          echo "Using Node $(node -v)"
+          echo "Using pnpm $(pnpm -v)"
         '';
       };
     });
