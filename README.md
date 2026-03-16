@@ -23,12 +23,15 @@ patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" node_modu
 
 ### Available Scripts
 
+**Development:**
 - `pnpm build` - Build the library for production
 - `pnpm dev` - Build in watch mode for development
 - `pnpm test` - Run tests once
 - `pnpm test:watch` - Run tests in watch mode
 - `pnpm test:ui` - Run tests with Vitest UI
 - `pnpm test:coverage` - Run tests with coverage report
+
+**Code Quality:**
 - `pnpm lint` - Check for linting issues
 - `pnpm lint:fix` - Fix linting issues automatically
 - `pnpm format` - Check code formatting
@@ -36,25 +39,60 @@ patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" node_modu
 - `pnpm typecheck` - Run TypeScript type checking
 - `pnpm check` - Run all checks (lint, format, typecheck, test)
 
+**Package Validation:**
+- `pnpm validate` - Validate package exports and types (publint + attw)
+- `pnpm size` - Check bundle size limits
+
+**Release:**
+- `pnpm changeset` - Create a new changeset for versioning
+- `pnpm version` - Apply changesets and bump version
+- `pnpm release` - Build, validate, and publish to npm (CI only)
+
 ### Tooling
 
 This project uses modern 2026 tooling:
 
+**Core:**
 - **TypeScript 5.9+** - Type safety
 - **tsup** - Fast bundler built on esbuild
 - **Biome** - Ultra-fast linting and formatting (replaces ESLint + Prettier)
 - **Vitest** - Fast, modern test framework
 - **pnpm** - Fast, disk space efficient package manager
 
-## Publishing Roadmap
+**Quality & Publishing:**
+- **simple-git-hooks** + **lint-staged** - Pre-commit checks
+- **publint** - Package validation
+- **@arethetypeswrong/cli** - TypeScript types validation
+- **size-limit** - Bundle size monitoring
+- **changesets** - Automated versioning and changelog generation
 
-When ready to publish, we'll need to set up:
+## Release Process
 
-- [ ] **Git hooks** - Pre-commit hooks with `simple-git-hooks` + `lint-staged`
-- [ ] **Package validation** - Add `publint` and `@arethetypeswrong/cli` to catch publishing issues
-- [ ] **Versioning & Changelogs** - Set up `changesets` for semantic versioning
-- [ ] **CI/CD** - GitHub Actions for automated testing and publishing
-- [ ] **Bundle size tracking** - Add `size-limit` to monitor package size
+This project uses [Changesets](https://github.com/changesets/changesets) for automated versioning and publishing:
+
+1. **Create a changeset** when making changes:
+   ```bash
+   pnpm changeset
+   ```
+   Select the version bump type (major/minor/patch) and describe your changes.
+
+2. **Commit the changeset** along with your code changes.
+
+3. **Open a PR** - CI will validate all checks including changeset status.
+
+4. **Merge to main** - CI automatically creates a "Version Packages" PR.
+
+5. **Merge Version PR** - CI automatically publishes to npm with provenance.
+
+### Pre-releases
+
+For alpha/beta releases, use changeset prerelease mode:
+```bash
+pnpm changeset pre enter alpha
+pnpm changeset
+# ... make your changes ...
+pnpm changeset pre exit
+```
 
 ## License
 
