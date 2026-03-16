@@ -34,6 +34,12 @@
         shellHook = ''
           echo "Using Node $(node -v)"
           echo "Using pnpm $(pnpm -v)"
+          
+          # Patch Biome binary for NixOS if it exists
+          BIOME_BIN="node_modules/.pnpm/@biomejs+cli-linux-x64@*/node_modules/@biomejs/cli-linux-x64/biome"
+          if [ -f $BIOME_BIN ]; then
+            patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $BIOME_BIN 2>/dev/null || true
+          fi
         '';
       };
     });

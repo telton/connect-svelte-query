@@ -1,0 +1,55 @@
+{
+  "name": "connect-svelte-query",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js",
+      "import": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format .",
+    "format:fix": "biome format --write .",
+    "typecheck": "tsc --noEmit",
+    "check": "pnpm lint && pnpm format && pnpm typecheck && pnpm test"
+  },
+  "keywords": [
+    "svelte",
+    "sveltekit",
+    "connectrpc",
+    "grpc",
+    "tanstack-query",
+    "protobuf"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.32.1",
+  "peerDependencies": {
+    "@connectrpc/connect": "^2",
+    "@tanstack/svelte-query": "^6"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.7",
+    "@types/node": "^24.12.0",
+    "@vitest/ui": "^4.1.0",
+    "svelte": "^5.53.12",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}
