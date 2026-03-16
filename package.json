@@ -38,6 +38,9 @@
   ],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "packageManager": "pnpm@10.32.1",
   "peerDependencies": {
     "@connectrpc/connect": "^2",
@@ -52,9 +55,13 @@
     "@bufbuild/protobuf": "^2.11.0",
     "@connectrpc/connect": "^2.1.1",
     "@connectrpc/connect-web": "^2.1.1",
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@tanstack/svelte-query": "^6.1.0",
+    "@testing-library/svelte": "^5.3.1",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.12.0",
     "@vitest/ui": "^4.1.0",
+    "happy-dom": "^20.8.4",
     "svelte": "^5.53.12",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",

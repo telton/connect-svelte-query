@@ -1,9 +1,11 @@
 import { defineConfig } from 'vitest/config';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
+  plugins: [svelte()],
   test: {
     globals: true,
-    environment: 'node',
+    environment: 'happy-dom',
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
