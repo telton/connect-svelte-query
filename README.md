@@ -68,6 +68,20 @@ This project uses modern 2026 tooling:
 
 ## Release Process
 
+### First-Time Setup
+
+To enable automated releases, configure the following in your GitHub repository:
+
+1. **Enable GitHub Actions PR creation:**
+   - Go to Settings → Actions → General
+   - Under "Workflow permissions", enable "Allow GitHub Actions to create and approve pull requests"
+
+2. **Add npm token:**
+   - Create an npm access token with publish permissions
+   - Add it as `NPM_TOKEN` in Settings → Secrets and variables → Actions
+
+### Publishing Workflow
+
 This project uses [Changesets](https://github.com/changesets/changesets) for automated versioning and publishing:
 
 1. **Create a changeset** when making changes:
