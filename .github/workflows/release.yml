@@ -1,9 +1,14 @@
 name: Release
 
+# Disabled for manual publishing - uncomment to enable automated releases
+# on:
+#   push:
+#     branches:
+#       - main
+
+# Manual trigger only
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 # Only allow one release workflow to run at a time
 concurrency:
