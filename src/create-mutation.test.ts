@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createTestQueryClient, createMockTransport } from './test-utils';
 import type { DescMethodUnary } from '@bufbuild/protobuf';
 import type { QueryClient } from '@tanstack/svelte-query';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createMockTransport, createTestQueryClient } from './test-utils';
 
 const mockSchema: DescMethodUnary<any, any> = {
   name: 'CreateTodo',
@@ -32,7 +32,7 @@ describe('createMutation', () => {
       undefined as any,
       undefined as any,
       undefined as any,
-      { text: 'Test todo' }
+      { text: 'Test todo' },
     );
 
     expect(transport.unary).toHaveBeenCalled();
@@ -46,7 +46,7 @@ describe('createMutation', () => {
     });
 
     await expect(
-      transport.unary(mockSchema as any, undefined as any, undefined as any, undefined as any, {})
+      transport.unary(mockSchema as any, undefined as any, undefined as any, undefined as any, {}),
     ).rejects.toThrow('Mutation failed');
   });
 
@@ -61,7 +61,7 @@ describe('createMutation', () => {
       undefined as any,
       undefined as any,
       undefined as any,
-      { text: 'New todo' }
+      { text: 'New todo' },
     );
 
     expect(result.message).toEqual(mockResponse);

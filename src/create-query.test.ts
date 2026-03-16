@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createTestQueryClient, createMockTransport } from './test-utils';
 import type { DescMethodUnary } from '@bufbuild/protobuf';
-import type { QueryClient } from '@tanstack/svelte-query';
 import { createQueryOptions } from '@connectrpc/connect-query-core';
+import type { QueryClient } from '@tanstack/svelte-query';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createMockTransport, createTestQueryClient } from './test-utils';
 
 // Mock schema for testing
 const mockSchema: DescMethodUnary<any, any> = {
@@ -43,7 +43,7 @@ describe('createQuery', () => {
       undefined as any,
       undefined as any,
       undefined as any,
-      {}
+      {},
     );
 
     expect(transport.unary).toHaveBeenCalled();
@@ -57,7 +57,7 @@ describe('createQuery', () => {
     });
 
     await expect(
-      transport.unary(mockSchema as any, undefined as any, undefined as any, undefined as any, {})
+      transport.unary(mockSchema as any, undefined as any, undefined as any, undefined as any, {}),
     ).rejects.toThrow('Connection failed');
   });
 });

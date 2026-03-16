@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { useTransport } from '../context.svelte';
+import { useTransport } from '../context.svelte';
 
-  let transport = $state<any>(null);
-  let error = $state<string | null>(null);
+let transport = $state<any>(null);
+let error = $state<string | null>(null);
 
-  try {
-    transport = useTransport();
-  } catch (e) {
-    error = e instanceof Error ? e.message : String(e);
-  }
+try {
+  transport = useTransport();
+} catch (e) {
+  error = e instanceof Error ? e.message : String(e);
+}
 
-  export { transport, error };
+export { error, transport };
 </script>
 
 {#if error}

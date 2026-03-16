@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type { Transport } from '@connectrpc/connect';
-  import { setTransport } from '../context.svelte';
-  import type { Snippet } from 'svelte';
+import type { Transport } from '@connectrpc/connect';
+import type { Snippet } from 'svelte';
+import { setTransport } from '../context.svelte';
 
-  const { transport, children }: { transport: Transport; children: Snippet } = $props();
+const { transport, children }: { transport: Transport; children: Snippet } = $props();
 
-  setTransport(transport);
+setTransport(transport);
 </script>
 
 {@render children()}

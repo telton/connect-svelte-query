@@ -1,22 +1,22 @@
 <script lang="ts">
-  import type { DescMethodUnary } from '@bufbuild/protobuf';
-  import { QueryClientProvider } from '@tanstack/svelte-query';
-  import { createMutation } from '../create-mutation';
-  import type { QueryClient } from '@tanstack/svelte-query';
+import type { DescMethodUnary } from '@bufbuild/protobuf';
+import type { QueryClient } from '@tanstack/svelte-query';
+import { QueryClientProvider } from '@tanstack/svelte-query';
+import { createMutation } from '../create-mutation';
 
-  const {
-    schema,
-    options,
-    queryClient,
-  }: {
-    schema: DescMethodUnary<any, any>;
-    options?: () => any;
-    queryClient: QueryClient;
-  } = $props();
+const {
+  schema,
+  options,
+  queryClient,
+}: {
+  schema: DescMethodUnary<any, any>;
+  options?: () => any;
+  queryClient: QueryClient;
+} = $props();
 
-  const mutation = createMutation(schema, options);
+const mutation = createMutation(schema, options);
 
-  export { mutation };
+export { mutation };
 </script>
 
 <QueryClientProvider client={queryClient}>

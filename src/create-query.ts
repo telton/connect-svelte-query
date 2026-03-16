@@ -1,18 +1,17 @@
 import type {
-    DescMessage,
-    DescMethodUnary,
-    MessageInitShape,
-    MessageShape,
+  DescMessage,
+  DescMethodUnary,
+  MessageInitShape,
+  MessageShape,
 } from '@bufbuild/protobuf';
-import type { Transport } from '@connectrpc/connect';
-import { ConnectError } from '@connectrpc/connect';
+import type { ConnectError, Transport } from '@connectrpc/connect';
+import {
+  type ConnectQueryKey,
+  createQueryOptions,
+  type SkipToken,
+} from '@connectrpc/connect-query-core';
 import type { CreateQueryOptions, CreateQueryResult } from '@tanstack/svelte-query';
 import { createQuery as tsCreateQuery } from '@tanstack/svelte-query';
-import {
-    createQueryOptions,
-    type ConnectQueryKey,
-    type SkipToken,
-} from '@connectrpc/connect-query-core';
 import { useTransport } from './context.svelte';
 
 export function createQuery<

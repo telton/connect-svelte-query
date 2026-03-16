@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createMockTransport } from './test-utils';
 
 describe('Transport Context', () => {
@@ -22,7 +22,7 @@ describe('Transport Context', () => {
         undefined as any,
         undefined as any,
         undefined as any,
-        {}
+        {},
       );
 
       expect(result.message).toEqual(mockData);

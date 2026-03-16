@@ -1,12 +1,10 @@
-import type { Component } from 'svelte';
-import { render as testingLibraryRender } from '@testing-library/svelte';
-import { QueryClient } from '@tanstack/svelte-query';
 import type { Transport } from '@connectrpc/connect';
+import { QueryClient } from '@tanstack/svelte-query';
+import { render as testingLibraryRender } from '@testing-library/svelte';
+import type { Component } from 'svelte';
 import { vi } from 'vitest';
 
-export function createMockTransport(
-  responses: Record<string, any> = {},
-): Transport {
+export function createMockTransport(responses: Record<string, any> = {}): Transport {
   return {
     unary: vi.fn((schema) => {
       const methodName = schema.name;
@@ -38,7 +36,6 @@ export function createTestQueryClient(): QueryClient {
   });
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: return type inference issue with testing library
 export function renderWithQueryClient(
   component: Component,
   options: {
