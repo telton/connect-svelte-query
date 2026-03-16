@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Total",
+    "path": "dist/index.js",
+    "limit": "10 KB",
+    "import": "*"
+  },
+  {
+    "name": "createQuery",
+    "path": "dist/index.js",
+    "limit": "9 KB",
+    "import": "{ createQuery }"
+  },
+  {
+    "name": "createMutation",
+    "path": "dist/index.js",
+    "limit": "3 KB",
+    "import": "{ createMutation }"
+  }
+]
