@@ -1,110 +1,205 @@
 # connect-svelte-query
 
-A library for integrating ConnectRPC with TanStack Query in Svelte applications.
+A Svelte 5 adapter for integrating [ConnectRPC](https://connectrpc.com/) with [TanStack Query](https://tanstack.com/query). Provides type-safe hooks for queries and mutations that work seamlessly with Svelte's reactivity system.
 
-## Development
-
-### Prerequisites
-
-- Node.js (see `.nvmrc` or `flake.nix` for version)
-- pnpm 10.32.1+
-
-### Setup
+## Installation
 
 ```bash
-pnpm install
+npm install @telton/connect-svelte-query @connectrpc/connect @tanstack/svelte-query
 ```
 
-**NixOS Users:** The Biome binary needs to be patched after installation. This is handled automatically by the `flake.nix` shell hook, or you can manually run:
+## Requirements
 
-```bash
-patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" node_modules/.pnpm/@biomejs+cli-linux-x64@*/node_modules/@biomejs/cli-linux-x64/biome
+- Svelte 5+
+- Node.js 24+
+
+## Usage
+
+### Setup Transport
+
+First, set up your Connect transport in your root component:
+
+```svelte
+<script lang="ts">
+  import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
+  import { createConnectTransport } from '@connectrpc/connect-web';
+  import { setTransport } from '@telton/connect-svelte-query';
+
+  const transport = createConnectTransport({
+    baseUrl: 'https://api.example.com',
+  });
+
+  setTransport(transport);
+
+  const queryClient = new QueryClient();
+</script>
+
+<QueryClientProvider client={queryClient}>
+  <slot />
+</QueryClientProvider>
 ```
 
-### Available Scripts
+### Queries
 
-**Development:**
-- `pnpm build` - Build the library for production
-- `pnpm dev` - Build in watch mode for development
-- `pnpm test` - Run tests once
-- `pnpm test:watch` - Run tests in watch mode
-- `pnpm test:ui` - Run tests with Vitest UI
-- `pnpm test:coverage` - Run tests with coverage report
+Use `createQuery` to fetch data from unary RPC methods:
 
-**Code Quality:**
-- `pnpm lint` - Check for linting issues
-- `pnpm lint:fix` - Fix linting issues automatically
-- `pnpm format` - Check code formatting
-- `pnpm format:fix` - Format code automatically
-- `pnpm typecheck` - Run TypeScript type checking
-- `pnpm check` - Run all checks (lint, format, typecheck, test)
+```svelte
+<script lang="ts">
+  import { createQuery } from '@telton/connect-svelte-query';
+  import { getUser } from './gen/user_connect';
 
-**Package Validation:**
-- `pnpm validate` - Validate package exports and types (publint + attw)
-- `pnpm size` - Check bundle size limits
+  let userId = $state(1);
 
-**Release:**
-- `pnpm changeset` - Create a new changeset for versioning
-- `pnpm version` - Apply changesets and bump version
-- `pnpm release` - Build, validate, and publish to npm (CI only)
+  const query = createQuery(
+    getUser,
+    () => ({ id: userId }), // Input accessor for reactivity
+  );
+</script>
 
-### Tooling
+{#if query.isPending}
+  <p>Loading...</p>
+{:else if query.isError}
+  <p>Error: {query.error.message}</p>
+{:else}
+  <p>User: {query.data.name}</p>
+{/if}
+```
 
-This project uses modern 2026 tooling:
+The input must be wrapped in a function to maintain reactivity. When `userId` changes, the query automatically refetches.
 
-**Core:**
-- **TypeScript 5.9+** - Type safety
-- **tsup** - Fast bundler built on esbuild
-- **Biome** - Ultra-fast linting and formatting (replaces ESLint + Prettier)
-- **Vitest** - Fast, modern test framework
-- **pnpm** - Fast, disk space efficient package manager
+### Skip Queries
 
-**Quality & Publishing:**
-- **simple-git-hooks** + **lint-staged** - Pre-commit checks
-- **publint** - Package validation
-- **@arethetypeswrong/cli** - TypeScript types validation
-- **size-limit** - Bundle size monitoring
-- **changesets** - Automated versioning and changelog generation
+Use `skipToken` to conditionally skip queries:
 
-## Release Process
+```svelte
+<script lang="ts">
+  import { createQuery, skipToken } from '@telton/connect-svelte-query';
+  import { getUser } from './gen/user_connect';
 
-This project uses **manual publishing** with [Changesets](https://github.com/changesets/changesets) for versioning and changelog generation.
+  let userId = $state<number | undefined>(undefined);
 
-### Publishing a Release
+  const query = createQuery(
+    getUser,
+    () => (userId !== undefined ? { id: userId } : skipToken),
+  );
+</script>
+```
 
-1. **Create a changeset** when making changes:
-   ```bash
-   pnpm changeset
-   ```
-   Select the version bump type (major/minor/patch) and describe your changes.
+### Mutations
 
-2. **Commit the changeset** along with your code changes.
+Use `createMutation` to call RPC methods that modify data:
 
-3. **When ready to release:**
-   ```bash
-   # Update version and changelog
-   pnpm changeset version
-   
-   # Review the changes to package.json and CHANGELOG.md
-   git add .
-   git commit -m "chore: release vX.Y.Z"
-   git push
-   
-   # Build and publish
-   pnpm build
-   npm login  # if not already logged in
-   npm publish --access public --provenance
-   ```
+```svelte
+<script lang="ts">
+  import { createMutation } from '@telton/connect-svelte-query';
+  import { updateUser } from './gen/user_connect';
 
-### Automated Publishing (Optional)
+  const mutation = createMutation(updateUser);
 
-The release workflow is available but currently disabled. To enable automated releases:
+  function handleSubmit(name: string) {
+    mutation.mutate({ id: 1, name });
+  }
+</script>
 
-1. Uncomment the trigger in `.github/workflows/release.yml`
-2. Enable GitHub Actions PR creation (Settings → Actions → General)
-3. Add `NPM_TOKEN` secret (Settings → Secrets and variables → Actions)
+<form onsubmit={(e) => {
+  e.preventDefault();
+  const formData = new FormData(e.currentTarget);
+  handleSubmit(formData.get('name') as string);
+}}>
+  <input name="name" />
+  <button type="submit" disabled={mutation.isPending}>
+    {mutation.isPending ? 'Saving...' : 'Save'}
+  </button>
+</form>
 
-Then merging to main will automatically create "Version Packages" PRs that publish when merged.
+{#if mutation.isError}
+  <p>Error: {mutation.error.message}</p>
+{/if}
+```
+
+### Query Options
+
+Pass additional TanStack Query options:
+
+```svelte
+<script lang="ts">
+  import { createQuery } from '@telton/connect-svelte-query';
+  import { getUser } from './gen/user_connect';
+
+  const query = createQuery(
+    getUser,
+    () => ({ id: 1 }),
+    () => ({
+      staleTime: 5000,
+      refetchInterval: 10000,
+      select: (data) => data.name, // Transform data
+    }),
+  );
+</script>
+```
+
+### Custom Transport
+
+Override the transport for specific queries:
+
+```svelte
+<script lang="ts">
+  import { createQuery } from '@telton/connect-svelte-query';
+  import { createConnectTransport } from '@connectrpc/connect-web';
+  import { getUser } from './gen/user_connect';
+
+  const customTransport = createConnectTransport({
+    baseUrl: 'https://other-api.example.com',
+  });
+
+  const query = createQuery(
+    getUser,
+    () => ({ id: 1 }),
+    () => ({ transport: customTransport }),
+  );
+</script>
+```
+
+## API
+
+### `setTransport(transport: Transport)`
+
+Sets the Connect transport in Svelte context. Must be called in a component initialization.
+
+### `useTransport(): Transport`
+
+Retrieves the transport from context. Throws if no transport is set.
+
+### `createQuery(schema, input?, options?)`
+
+Creates a query for a unary RPC method.
+
+**Parameters:**
+- `schema` - Connect method descriptor from generated code
+- `input` - Function returning the request message or `skipToken`
+- `options` - Function returning TanStack Query options (optional)
+
+**Returns:** TanStack Query result object
+
+### `createMutation(schema, options?)`
+
+Creates a mutation for a unary RPC method.
+
+**Parameters:**
+- `schema` - Connect method descriptor from generated code
+- `options` - Function returning TanStack Query mutation options (optional)
+
+**Returns:** TanStack Query mutation result object
+
+### Re-exported from `@connectrpc/connect-query-core`
+
+- `createConnectQueryKey(schema, input?)` - Generate query keys
+- `callUnaryMethod(schema, input, options)` - Call methods directly
+- `skipToken` - Skip queries conditionally
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## License
 

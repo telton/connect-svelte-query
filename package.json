@@ -1,7 +1,7 @@
 {
   "name": "@telton/connect-svelte-query",
   "version": "0.0.2",
-  "description": "",
+  "description": "Svelte 5 adapter for integrating ConnectRPC with TanStack Query",
   "type": "module",
   "exports": {
     ".": {
@@ -54,6 +54,14 @@
   ],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/telton/connect-svelte-query.git"
+  },
+  "homepage": "https://github.com/telton/connect-svelte-query#readme",
+  "bugs": {
+    "url": "https://github.com/telton/connect-svelte-query/issues"
+  },
   "engines": {
     "node": ">=24.0.0"
   },
