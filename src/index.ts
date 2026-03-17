@@ -9,3 +9,4 @@ export {
 export * from './context.svelte.js';
 export * from './create-mutation.js';
 export * from './create-query.js';
+export type { GetMethod, MethodNames, ServiceLike } from './types.js';

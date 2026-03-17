@@ -41,17 +41,20 @@ First, set up your Connect transport in your root component:
 
 ### Queries
 
-Use `createQuery` to fetch data from unary RPC methods:
+Use `createQuery` to fetch data from unary RPC methods. There are two ways to specify the method:
+
+#### Option 1: Service and method name (Recommended)
 
 ```svelte
 <script lang="ts">
   import { createQuery } from '@telton/connect-svelte-query';
-  import { getUser } from './gen/user_connect';
+  import { UserService } from './gen/user_pb';
 
   let userId = $state(1);
 
   const query = createQuery(
-    getUser,
+    UserService,
+    'getUser',
     () => ({ id: userId }), // Input accessor for reactivity
   );
 </script>
@@ -64,6 +67,24 @@ Use `createQuery` to fetch data from unary RPC methods:
   <p>User: {query.data.name}</p>
 {/if}
 ```
+
+#### Option 2: Method descriptor
+
+```svelte
+<script lang="ts">
+  import { createQuery } from '@telton/connect-svelte-query';
+  import { UserService } from './gen/user_pb';
+
+  let userId = $state(1);
+
+  const query = createQuery(
+    UserService.method.getUser,
+    () => ({ id: userId }),
+  );
+</script>
+```
+
+Both syntaxes are fully type-safe with autocomplete. The first option is shorter and more readable.
 
 The input must be wrapped in a function to maintain reactivity. When `userId` changes, the query automatically refetches.
 
@@ -87,14 +108,16 @@ Use `skipToken` to conditionally skip queries:
 
 ### Mutations
 
-Use `createMutation` to call RPC methods that modify data:
+Use `createMutation` to call RPC methods that modify data. Like queries, there are two ways to specify the method:
+
+#### Option 1: Service and method name (Recommended)
 
 ```svelte
 <script lang="ts">
   import { createMutation } from '@telton/connect-svelte-query';
-  import { updateUser } from './gen/user_connect';
+  import { UserService } from './gen/user_pb';
 
-  const mutation = createMutation(updateUser);
+  const mutation = createMutation(UserService, 'updateUser');
 
   function handleSubmit(name: string) {
     mutation.mutate({ id: 1, name });
@@ -117,6 +140,17 @@ Use `createMutation` to call RPC methods that modify data:
 {/if}
 ```
 
+#### Option 2: Method descriptor
+
+```svelte
+<script lang="ts">
+  import { createMutation } from '@telton/connect-svelte-query';
+  import { UserService } from './gen/user_pb';
+
+  const mutation = createMutation(UserService.method.updateUser);
+</script>
+```
+
 ### Query Options
 
 Pass additional TanStack Query options:
@@ -124,10 +158,11 @@ Pass additional TanStack Query options:
 ```svelte
 <script lang="ts">
   import { createQuery } from '@telton/connect-svelte-query';
-  import { getUser } from './gen/user_connect';
+  import { UserService } from './gen/user_pb';
 
   const query = createQuery(
-    getUser,
+    UserService,
+    'getUser',
     () => ({ id: 1 }),
     () => ({
       staleTime: 5000,
@@ -146,14 +181,15 @@ Override the transport for specific queries:
 <script lang="ts">
   import { createQuery } from '@telton/connect-svelte-query';
   import { createConnectTransport } from '@connectrpc/connect-web';
-  import { getUser } from './gen/user_connect';
+  import { UserService } from './gen/user_pb';
 
   const customTransport = createConnectTransport({
     baseUrl: 'https://other-api.example.com',
   });
 
   const query = createQuery(
-    getUser,
+    UserService,
+    'getUser',
     () => ({ id: 1 }),
     () => ({ transport: customTransport }),
   );
@@ -170,24 +206,103 @@ Sets the Connect transport in Svelte context. Must be called in a component init
 
 Retrieves the transport from context. Throws if no transport is set.
 
-### `createQuery(schema, input?, options?)`
+### `createQuery(...)`
 
-Creates a query for a unary RPC method.
+Creates a query for a unary RPC method. Supports two signatures:
+
+#### Signature 1: Service and method name (Recommended)
+
+```typescript
+createQuery<S, M>(
+  service: S,
+  methodName: M,
+  input?: () => MessageInitShape<I> | SkipToken,
+  options?: () => CreateQueryOptions
+): CreateQueryResult
+```
 
 **Parameters:**
-- `schema` - Connect method descriptor from generated code
-- `input` - Function returning the request message or `skipToken`
+
+- `service` - The service object (e.g., `UserService`)
+- `methodName` - The method name as a string (e.g., `'getUser'`)
+- `input` - Function returning the request message or `skipToken` (optional)
 - `options` - Function returning TanStack Query options (optional)
+
+**Example:**
+
+```typescript
+const query = createQuery(UserService, "getUser", () => ({ id: 1 }));
+```
+
+#### Signature 2: Method descriptor
+
+```typescript
+createQuery<I, O>(
+  schema: DescMethodUnary<I, O>,
+  input?: () => MessageInitShape<I> | SkipToken,
+  options?: () => CreateQueryOptions
+): CreateQueryResult
+```
+
+**Parameters:**
+
+- `schema` - Connect method descriptor (e.g., `UserService.method.getUser`)
+- `input` - Function returning the request message or `skipToken` (optional)
+- `options` - Function returning TanStack Query options (optional)
+
+**Example:**
+
+```typescript
+const query = createQuery(UserService.method.getUser, () => ({ id: 1 }));
+```
 
 **Returns:** TanStack Query result object
 
-### `createMutation(schema, options?)`
+### `createMutation(...)`
 
-Creates a mutation for a unary RPC method.
+Creates a mutation for a unary RPC method. Supports two signatures:
+
+#### Signature 1: Service and method name (Recommended)
+
+```typescript
+createMutation<S, M>(
+  service: S,
+  methodName: M,
+  options?: () => CreateMutationOptions
+): CreateMutationResult
+```
 
 **Parameters:**
-- `schema` - Connect method descriptor from generated code
+
+- `service` - The service object (e.g., `UserService`)
+- `methodName` - The method name as a string (e.g., `'updateUser'`)
 - `options` - Function returning TanStack Query mutation options (optional)
+
+**Example:**
+
+```typescript
+const mutation = createMutation(UserService, "updateUser");
+```
+
+#### Signature 2: Method descriptor
+
+```typescript
+createMutation<I, O>(
+  schema: DescMethodUnary<I, O>,
+  options?: () => CreateMutationOptions
+): CreateMutationResult
+```
+
+**Parameters:**
+
+- `schema` - Connect method descriptor (e.g., `UserService.method.updateUser`)
+- `options` - Function returning TanStack Query mutation options (optional)
+
+**Example:**
+
+```typescript
+const mutation = createMutation(UserService.method.updateUser);
+```
 
 **Returns:** TanStack Query mutation result object
 
